@@ -3,14 +3,24 @@
  */
 package com.dff.cordova.plugin.crashreport;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.List;
 
+import org.apache.cordova.CordovaInterface;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.dff.cordova.plugin.common.AbstractPluginListener;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
+
+import android.app.ActivityManager;
+import android.content.Context;
+import android.os.Environment;
 
 /**
  * @author frank
@@ -19,9 +29,11 @@ import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 public class CrashReporter extends AbstractPluginListener implements UncaughtExceptionHandler {
 	public static final String LOG_TAG = "com.dff.cordova.plugin.crashreport.CrashReporter";
 	private UncaughtExceptionHandler defaultHandler;
+	private CordovaInterface cordova;
 	
-	public CrashReporter(UncaughtExceptionHandler defaultHandler) {
+	public CrashReporter(UncaughtExceptionHandler defaultHandler, CordovaInterface cordova) {
 		this.defaultHandler = defaultHandler;
+		this.cordova = cordova;
 	}
 
 	/* (non-Javadoc)
@@ -31,6 +43,13 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 	public void uncaughtException(Thread t, Throwable e) {
 		// first log it
 		CordovaPluginLog.e(LOG_TAG, e.getMessage(), e);
+		
+//		ActivityManager activityManager = (ActivityManager) this.cordova.getActivity().getSystemService(Context.ACTIVITY_SERVICE);
+//		List<ActivityManager.ProcessErrorStateInfo> errorProcesses = activityManager.getProcessesInErrorState();
+//		
+//		for (ActivityManager.ProcessErrorStateInfo pesi : errorProcesses) {
+//			CordovaPluginLog.e(LOG_TAG, pesi.processName + ": " + pesi.shortMsg);
+//		}
 		
 		JSONObject jsonCrashReport = new JSONObject(); 
 		JSONObject jsonThread = new JSONObject();
@@ -58,6 +77,40 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 			jsonCrashReport.put("thread", jsonThread);
 			jsonCrashReport.put("throwable", jsonThrowable);
 			
+			if (isExternalStorageWritable()) {
+				File crashReportDir = new File(this.cordova.getActivity().getExternalFilesDir(null), "crashreports");
+				
+				if (!crashReportDir.mkdirs()) {
+					CordovaPluginLog.w(LOG_TAG, crashReportDir.getAbsolutePath() + " not created");
+				}
+				
+				if (crashReportDir.exists() ) {
+					String filename = "crashreport_" + System.currentTimeMillis() + ".txt";
+					File crashReportFile = new File(crashReportDir, filename);
+					
+					try {
+						if (!crashReportFile.exists() && crashReportFile.createNewFile()) {
+							CordovaPluginLog.i(LOG_TAG, "created new file: " + crashReportFile.getAbsolutePath());
+						}
+						
+						FileOutputStream outputStream = new FileOutputStream(crashReportFile, true);
+						
+						outputStream.write(jsonCrashReport.toString(4).getBytes());
+						outputStream.flush();
+						outputStream.close();						
+					}
+					catch (FileNotFoundException e1) {
+						CordovaPluginLog.e(LOG_TAG, e1.getMessage(), e);
+					}
+					catch (IOException e1) {
+						CordovaPluginLog.e(LOG_TAG, e1.getMessage(), e);
+					}
+				}
+				else {
+					CordovaPluginLog.w(LOG_TAG, crashReportDir.getAbsolutePath() + " does not exist");
+				}
+			}
+			
 			super.sendPluginResult(jsonCrashReport);
 		}
 		catch (JSONException e1) {
@@ -67,4 +120,14 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 		// finally call initial exception handler
 		defaultHandler.uncaughtException(t, e);
 	}
+	
+	/* Checks if external storage is available for read and write */
+	public boolean isExternalStorageWritable() {
+	    String state = Environment.getExternalStorageState();
+	    if (Environment.MEDIA_MOUNTED.equals(state)) {
+	        return true;
+	    }
+	    return false;
+	}
+
 }

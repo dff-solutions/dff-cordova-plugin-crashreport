@@ -13,7 +13,7 @@ var channel = require('cordova/channel');
 var feature = "CrashReport";
 var self = {};
 
-var actions = ["onLog", "onCrash", "throwDeadObjectException"];
+var actions = ["onLog", "onCrash", "throwUncaughtException"];
 
 function createActionFunction (action) {
     return function (success, error, args) {
@@ -23,6 +23,14 @@ function createActionFunction (action) {
 
 actions.forEach(function (action) {
     self[action] = createActionFunction(action);
+});
+
+channel.onCordovaReady.subscribe(function () {
+    self.onCrash(function (crashReport) {
+        console.error(self.feature, JSON.stringify(crashReport, null, 4));
+    }, function (error) {
+        console.error(JSON.stringify(error, null, 4));
+    });
 });
 
 module.exports = self;

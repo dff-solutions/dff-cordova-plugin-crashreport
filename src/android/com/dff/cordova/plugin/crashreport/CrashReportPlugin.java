@@ -12,8 +12,6 @@ import org.json.JSONException;
 import com.dff.cordova.plugin.common.CommonPlugin;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 
-import android.os.DeadObjectException;
-
 /**
  * @author frank
  *
@@ -35,9 +33,15 @@ public class CrashReportPlugin extends CommonPlugin {
 	public void pluginInitialize() {
 		super.pluginInitialize();
 		
-		UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
-		this.crashReporter = new CrashReporter(handler);
-		Thread.setDefaultUncaughtExceptionHandler(this.crashReporter);
+		this.cordova.getActivity().runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
+				crashReporter = new CrashReporter(handler, cordova);
+				Thread.setDefaultUncaughtExceptionHandler(crashReporter);				
+			}
+		});
 	}
 	
     /**
@@ -76,8 +80,14 @@ public class CrashReportPlugin extends CommonPlugin {
      		
      		return true;
      	}
-     	else if (action.equals("throwDeadObjectException")) {     		
-     		throw new Error(new DeadObjectException());
+     	else if (action.equals("throwUncaughtException")) {     	
+     		this.cordova.getActivity().runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					throw new RuntimeException("Testing unhandled exception processing.");	
+				}
+			});
      	}
      	
      	return super.execute(action, args, callbackContext);
