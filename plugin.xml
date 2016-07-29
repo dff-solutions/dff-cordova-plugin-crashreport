@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0" 
+    id="com.dff.cordova.plugin.crashreport"
+    version="0.0.1">
+
+    <name>crashreport</name>
+    <description>crashreport Plugin</description>
+    <author>dff solutions</author>
+    <keywords>phonegap,cordova,crashreport,dff</keywords>
+ 
+     <js-module src="www/crashreport.js" name="crashreport">
+        <clobbers target="CrashReport" />
+    </js-module>
+    
+    <dependency id="com.dff.cordova.plugins.common" url="https://github.com/dff-solutions/dff.CordovaPlugin.Common.git" />
+ 
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="CrashReport">
+                <param name="android-package" value="com.dff.cordova.plugin.crashreport.CrashReportPlugin"/>
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+        
+		<source-file src="src/android/com/dff/cordova/plugin/crashreport/CrashReporter.java" target-dir="src/com/dff/cordova/plugin/crashreport" />
+		<source-file src="src/android/com/dff/cordova/plugin/crashreport/CrashReportPlugin.java" target-dir="src/com/dff/cordova/plugin/crashreport" />        
+     </platform>
+</plugin>
