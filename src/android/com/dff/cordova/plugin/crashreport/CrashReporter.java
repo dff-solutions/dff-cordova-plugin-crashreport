@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.List;
 
 import org.apache.cordova.CordovaInterface;
 import org.json.JSONArray;
@@ -18,8 +17,6 @@ import org.json.JSONObject;
 import com.dff.cordova.plugin.common.AbstractPluginListener;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.os.Environment;
 
 /**
@@ -43,13 +40,6 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 	public void uncaughtException(Thread t, Throwable e) {
 		// first log it
 		CordovaPluginLog.e(LOG_TAG, e.getMessage(), e);
-		
-//		ActivityManager activityManager = (ActivityManager) this.cordova.getActivity().getSystemService(Context.ACTIVITY_SERVICE);
-//		List<ActivityManager.ProcessErrorStateInfo> errorProcesses = activityManager.getProcessesInErrorState();
-//		
-//		for (ActivityManager.ProcessErrorStateInfo pesi : errorProcesses) {
-//			CordovaPluginLog.e(LOG_TAG, pesi.processName + ": " + pesi.shortMsg);
-//		}
 		
 		JSONObject jsonCrashReport = new JSONObject(); 
 		JSONObject jsonThread = new JSONObject();
