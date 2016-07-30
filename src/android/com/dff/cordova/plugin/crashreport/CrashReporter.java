@@ -18,11 +18,13 @@ import org.json.JSONObject;
 
 import com.dff.cordova.plugin.common.AbstractPluginListener;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
+import com.dff.cordova.plugin.crashreport.json.model.JsonDebugMemoryInfo;
 import com.dff.cordova.plugin.crashreport.json.model.JsonMemoryInfo;
 import com.dff.cordova.plugin.crashreport.json.model.JsonRunningAppProcessInfo;
 import com.dff.cordova.plugin.crashreport.json.model.JsonThread;
 import com.dff.cordova.plugin.crashreport.json.model.JsonThrowable;
 
+import ActivityManager.JsonProcessErrorStateInfo;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Environment;
@@ -50,7 +52,7 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 		CordovaPluginLog.e(LOG_TAG, e.getMessage(), e);
 		
 		JSONObject jsonCrashReport = new JSONObject();
-		//int pid = android.os.Process.myPid();
+		int pid = android.os.Process.myPid();
 		
 		try {
 			try {
@@ -60,13 +62,16 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 				
 				ActivityManager.getMyMemoryState(myMemoryOutState);
 				activityManager.getMemoryInfo(memoryInfo);
-				//android.os.Debug.MemoryInfo[] memoryInfos = activityManager.getProcessMemoryInfo(new int[] {pid});
+				android.os.Debug.MemoryInfo[] memoryInfos = activityManager.getProcessMemoryInfo(new int[] {pid});
 				List<ActivityManager.RunningAppProcessInfo> runningAppProcessessInfo = activityManager.getRunningAppProcesses();
+				List<ActivityManager.ProcessErrorStateInfo> processErrorStateInfo = activityManager.getProcessesInErrorState();
 				
 				jsonCrashReport.put("runningAppProcesses", JsonRunningAppProcessInfo.toJson(runningAppProcessessInfo));
+				jsonCrashReport.put("processErrorStateInfo", JsonProcessErrorStateInfo.toJson(processErrorStateInfo));
 				jsonCrashReport.put("myMemoryState", JsonRunningAppProcessInfo.toJson(myMemoryOutState));
 				jsonCrashReport.put("memoryInfo", JsonMemoryInfo.toJson(memoryInfo));
-				jsonCrashReport.put("memoryClass", activityManager.getMemoryClass())
+				jsonCrashReport.put("debugMemoryInfo", JsonDebugMemoryInfo.toJson(memoryInfos));
+				jsonCrashReport.put("memoryClass", activityManager.getMemoryClass());
 				jsonCrashReport.put("lowRamDevice", activityManager.isLowRamDevice());
 				jsonCrashReport.put("isUserAMonkey", ActivityManager.isUserAMonkey());
 				jsonCrashReport.put("isRunningInTestHarness", ActivityManager.isRunningInTestHarness());
@@ -93,7 +98,7 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 					
 					try {
 						if (!crashReportFile.exists() && crashReportFile.createNewFile()) {
-							CordovaPluginLog.i(LOG_TAG, crashReportFile.getAbsolutePath() + "created");
+							CordovaPluginLog.i(LOG_TAG, crashReportFile.getAbsolutePath() + " created");
 						}
 						
 						FileOutputStream outputStream = new FileOutputStream(crashReportFile, true);

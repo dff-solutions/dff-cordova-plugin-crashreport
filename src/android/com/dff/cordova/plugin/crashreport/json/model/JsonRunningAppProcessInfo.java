@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ActivityManager;
+import android.content.ComponentCallbacks2;
 
 public class JsonRunningAppProcessInfo {
 
@@ -15,8 +16,10 @@ public class JsonRunningAppProcessInfo {
 		
 		int importance = outState.importance;
 		int importanceReasonCode = outState.importanceReasonCode;
+		int lastTrimLevel = outState.lastTrimLevel;
 		String importanceName = null;
 		String importanceReasonCodeName = null;
+		String lastTrimLevelName = null;
 		
 		switch (importance) {
 		case ActivityManager.RunningAppProcessInfo.IMPORTANCE_BACKGROUND:
@@ -57,12 +60,39 @@ public class JsonRunningAppProcessInfo {
 			break;
 		}
 		
+		switch (lastTrimLevel) {
+		case ComponentCallbacks2.TRIM_MEMORY_BACKGROUND:
+			lastTrimLevelName = "TRIM_MEMORY_BACKGROUND";
+			break;
+		case ComponentCallbacks2.TRIM_MEMORY_COMPLETE:
+			lastTrimLevelName = "TRIM_MEMORY_COMPLETE";
+			break;
+		case ComponentCallbacks2.TRIM_MEMORY_MODERATE:
+			lastTrimLevelName = "TRIM_MEMORY_MODERATE";
+			break;
+		case ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL:
+			lastTrimLevelName = "TRIM_MEMORY_RUNNING_CRITICAL";
+			break;
+		case ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW:
+			lastTrimLevelName = "TRIM_MEMORY_RUNNING_LOW";
+			break;
+		case ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE:
+			lastTrimLevelName = "TRIM_MEMORY_RUNNING_MODERATE";
+			break;
+		case ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN:
+			lastTrimLevelName = "TRIM_MEMORY_UI_HIDDEN";
+			break;
+		default:
+			break;
+		}
+		
 		jsonOutState.put("importance", importance);
 		jsonOutState.put("importanceName", importanceName);
 		jsonOutState.put("importanceReasonCode", importanceReasonCode);
 		jsonOutState.put("importanceReasonCodeName", importanceReasonCodeName);
 		jsonOutState.put("importanceReasonPid", outState.importanceReasonPid);
-		jsonOutState.put("lastTrimLevel", outState.lastTrimLevel);
+		jsonOutState.put("lastTrimLevel", lastTrimLevel);
+		jsonOutState.put("lastTrimLevelName", lastTrimLevelName);
 		jsonOutState.put("lru", outState.lru);
 		jsonOutState.put("pid", outState.pid);
 		jsonOutState.put("uid", outState.uid);
