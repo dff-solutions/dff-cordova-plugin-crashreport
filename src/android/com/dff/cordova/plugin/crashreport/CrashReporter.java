@@ -8,14 +8,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.cordova.CordovaInterface;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.dff.cordova.plugin.common.AbstractPluginListener;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
+import com.dff.cordova.plugin.crashreport.json.model.JsonThread;
+import com.dff.cordova.plugin.crashreport.json.model.JsonThrowable;
 
 import android.os.Environment;
 
@@ -41,31 +44,11 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 		// first log it
 		CordovaPluginLog.e(LOG_TAG, e.getMessage(), e);
 		
-		JSONObject jsonCrashReport = new JSONObject(); 
-		JSONObject jsonThread = new JSONObject();
-		JSONObject jsonThrowable = new JSONObject();
-		JSONArray jsonStackTrace = new JSONArray();
-		StackTraceElement stackTrace[];
+		JSONObject jsonCrashReport = new JSONObject();
 		
 		try {
-			jsonThread.put("isAlive", t.isAlive());
-			jsonThread.put("id", t.getId());
-			jsonThread.put("priority", t.getPriority());
-			jsonThread.put("isDaemon", t.isDaemon());
-			jsonThread.put("isInterrupted", t.isInterrupted());
-			jsonThread.put("name", t.getName());
-			
-			jsonThrowable.put("message", e.getMessage());
-			
-			stackTrace = e.getStackTrace();
-			for (int i = 0; i < stackTrace.length; i++) {
-				jsonStackTrace.put(stackTrace[i].toString());
-			}
-			
-			jsonThrowable.put("stackTrace", jsonStackTrace);
-			
-			jsonCrashReport.put("thread", jsonThread);
-			jsonCrashReport.put("throwable", jsonThrowable);
+			jsonCrashReport.put("thread", JsonThread.toJson(t));
+			jsonCrashReport.put("throwable", JsonThrowable.toJson(e));
 			
 			if (isExternalStorageWritable()) {
 				File crashReportDir = new File(this.cordova.getActivity().getExternalFilesDir(null), "crashreports");
@@ -75,12 +58,14 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 				}
 				
 				if (crashReportDir.exists() ) {
-					String filename = "crashreport_" + System.currentTimeMillis() + ".txt";
+					String filename = "crashreport_"
+							+ new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date())
+							+ ".txt";
 					File crashReportFile = new File(crashReportDir, filename);
 					
 					try {
 						if (!crashReportFile.exists() && crashReportFile.createNewFile()) {
-							CordovaPluginLog.i(LOG_TAG, "created new file: " + crashReportFile.getAbsolutePath());
+							CordovaPluginLog.i(LOG_TAG, crashReportFile.getAbsolutePath() + "created");
 						}
 						
 						FileOutputStream outputStream = new FileOutputStream(crashReportFile, true);

@@ -4,7 +4,7 @@ xmlpre='<source-file src='
 xmlpost=' />'
 platform="android"
 
-for file in $(find -name '*.java'); do
+for file in $(find . -name '*.java'); do
     file=${file/.\/}
     dir=$(dirname $file)
     dir=${dir/$platform\/}

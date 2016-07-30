@@ -30,6 +30,10 @@
         </config-file>
         
 		<source-file src="src/android/com/dff/cordova/plugin/crashreport/CrashReporter.java" target-dir="src/com/dff/cordova/plugin/crashreport" />
-		<source-file src="src/android/com/dff/cordova/plugin/crashreport/CrashReportPlugin.java" target-dir="src/com/dff/cordova/plugin/crashreport" />        
+		<source-file src="src/android/com/dff/cordova/plugin/crashreport/CrashReportPlugin.java" target-dir="src/com/dff/cordova/plugin/crashreport" />
+		<source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonStacktrace.java" target-dir="src/com/dff/cordova/plugin/crashreport/json/model" />
+		<source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonThread.java" target-dir="src/com/dff/cordova/plugin/crashreport/json/model" />
+		<source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonThrowable.java" target-dir="src/com/dff/cordova/plugin/crashreport/json/model" />        
      </platform>
 </plugin>
+

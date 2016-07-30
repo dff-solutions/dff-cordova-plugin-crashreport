@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Cordova"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/dff.CordovaPlugin.Common"/>
-	<classpathentry kind="lib" path="/opt/android/sdk/platforms/android-19/android.jar"/>
+	<classpathentry kind="lib" path="/Users/frank/Library/Android/sdk/platforms/android-19/android.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
