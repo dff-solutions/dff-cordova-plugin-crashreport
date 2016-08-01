@@ -20,11 +20,12 @@ import com.dff.cordova.plugin.common.AbstractPluginListener;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 import com.dff.cordova.plugin.crashreport.json.model.JsonDebugMemoryInfo;
 import com.dff.cordova.plugin.crashreport.json.model.JsonMemoryInfo;
+import com.dff.cordova.plugin.crashreport.json.model.JsonProcessErrorStateInfo;
 import com.dff.cordova.plugin.crashreport.json.model.JsonRunningAppProcessInfo;
+import com.dff.cordova.plugin.crashreport.json.model.JsonRunningServiceInfo;
 import com.dff.cordova.plugin.crashreport.json.model.JsonThread;
 import com.dff.cordova.plugin.crashreport.json.model.JsonThrowable;
 
-import ActivityManager.JsonProcessErrorStateInfo;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Environment;
@@ -65,9 +66,11 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 				android.os.Debug.MemoryInfo[] memoryInfos = activityManager.getProcessMemoryInfo(new int[] {pid});
 				List<ActivityManager.RunningAppProcessInfo> runningAppProcessessInfo = activityManager.getRunningAppProcesses();
 				List<ActivityManager.ProcessErrorStateInfo> processErrorStateInfo = activityManager.getProcessesInErrorState();
+				List<ActivityManager.RunningServiceInfo> runningServiceInfo = activityManager.getRunningServices(1000);
 				
 				jsonCrashReport.put("runningAppProcesses", JsonRunningAppProcessInfo.toJson(runningAppProcessessInfo));
 				jsonCrashReport.put("processErrorStateInfo", JsonProcessErrorStateInfo.toJson(processErrorStateInfo));
+				jsonCrashReport.put("runningServiceInfo", JsonRunningServiceInfo.toJson(runningServiceInfo));				
 				jsonCrashReport.put("myMemoryState", JsonRunningAppProcessInfo.toJson(myMemoryOutState));
 				jsonCrashReport.put("memoryInfo", JsonMemoryInfo.toJson(memoryInfo));
 				jsonCrashReport.put("debugMemoryInfo", JsonDebugMemoryInfo.toJson(memoryInfos));

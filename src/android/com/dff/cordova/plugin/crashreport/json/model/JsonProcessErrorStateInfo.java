@@ -1,4 +1,4 @@
-package ActivityManager;
+package com.dff.cordova.plugin.crashreport.json.model;
 
 import java.util.List;
 
