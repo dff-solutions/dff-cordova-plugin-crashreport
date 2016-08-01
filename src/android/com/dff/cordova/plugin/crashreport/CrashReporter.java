@@ -81,8 +81,8 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 			}
 			catch (Exception e1) {
 				CordovaPluginLog.e(LOG_TAG, e.getMessage(), e1);
-			}
-			
+			}			
+					
 			jsonCrashReport.put("thread", JsonThread.toJson(t));
 			jsonCrashReport.put("throwable", JsonThrowable.toJson(e));
 			
@@ -95,7 +95,7 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 				
 				if (crashReportDir.exists() ) {
 					String filename = "crashreport_"
-							+ new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date())
+							+ new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss.SSS").format(new Date())
 							+ ".txt";
 					File crashReportFile = new File(crashReportDir, filename);
 					
