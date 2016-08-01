@@ -106,7 +106,7 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 						
 						FileOutputStream outputStream = new FileOutputStream(crashReportFile, true);
 						
-						outputStream.write(jsonCrashReport.toString(4).getBytes());
+						outputStream.write(jsonCrashReport.toString().getBytes());
 						outputStream.flush();
 						outputStream.close();						
 					}
