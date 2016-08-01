@@ -53,6 +53,7 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 		CordovaPluginLog.e(LOG_TAG, e.getMessage(), e);
 		
 		JSONObject jsonCrashReport = new JSONObject();
+		String date = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss.SSS").format(new Date());
 		int pid = android.os.Process.myPid();
 		
 		try {
@@ -83,6 +84,8 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 				CordovaPluginLog.e(LOG_TAG, e.getMessage(), e1);
 			}			
 					
+			jsonCrashReport.put("pid", pid);
+			jsonCrashReport.put("date", date);
 			jsonCrashReport.put("thread", JsonThread.toJson(t));
 			jsonCrashReport.put("throwable", JsonThrowable.toJson(e));
 			
@@ -95,7 +98,7 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 				
 				if (crashReportDir.exists() ) {
 					String filename = "crashreport_"
-							+ new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss.SSS").format(new Date())
+							+ date
 							+ ".txt";
 					File crashReportFile = new File(crashReportDir, filename);
 					
