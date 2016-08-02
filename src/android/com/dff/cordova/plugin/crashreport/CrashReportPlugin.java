@@ -32,16 +32,10 @@ public class CrashReportPlugin extends CommonPlugin {
 	@Override
 	public void pluginInitialize() {
 		super.pluginInitialize();
-		
-		this.cordova.getActivity().runOnUiThread(new Runnable() {
-			
-			@Override
-			public void run() {
-				UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
-				crashReporter = new CrashReporter(handler, cordova);
-				Thread.setDefaultUncaughtExceptionHandler(crashReporter);				
-			}
-		});
+				
+		UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
+		crashReporter = new CrashReporter(handler, cordova);
+		Thread.setDefaultUncaughtExceptionHandler(crashReporter);
 	}
 	
     /**
@@ -72,24 +66,23 @@ public class CrashReportPlugin extends CommonPlugin {
      		, final JSONArray args
      		, final CallbackContext callbackContext)
          throws JSONException {
- 		
-     	CordovaPluginLog.i(LOG_TAG, "call for action: " + action + "; args: " + args);
-     	
-     	if (action.equals("onCrash")) {
-     		this.crashReporter.setCallBack(callbackContext);
-     		
-     		return true;
-     	}
-     	else if (action.equals("throwUncaughtException")) {     	
-     		this.cordova.getActivity().runOnUiThread(new Runnable() {
+		CordovaPluginLog.i(LOG_TAG, "call for action: " + action + "; args: " + args);
+		
+		if (action.equals("onCrash")) {
+			this.crashReporter.setCallBack(callbackContext);
+			
+			return true;
+		}
+		else if (action.equals("throwUncaughtException")) {     	
+			this.cordova.getActivity().runOnUiThread(new Runnable() {
 				
 				@Override
 				public void run() {
 					throw new RuntimeException("Testing unhandled exception processing.");	
 				}
 			});
-     	}
-     	
-     	return super.execute(action, args, callbackContext);
+		}
+		
+		return super.execute(action, args, callbackContext);
      }
 }
