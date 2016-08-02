@@ -73,12 +73,24 @@ public class CrashReportPlugin extends CommonPlugin {
 			
 			return true;
 		}
-		else if (action.equals("throwUncaughtException")) {     	
+		else if (action.equals("throwUncaughtException")) {
+			throw new RuntimeException("Testing unhandled exception processing.");
+		}
+		else if (action.equals("throwUncaughtExceptionOnUi")) {     	
 			this.cordova.getActivity().runOnUiThread(new Runnable() {
 				
 				@Override
 				public void run() {
-					throw new RuntimeException("Testing unhandled exception processing.");	
+					throw new RuntimeException("Testing unhandled exception processing on ui thread.");	
+				}
+			});
+		}
+		else if (action.equals("throwUncaughtExceptionOnThreadPool")) {     	
+			this.cordova.getThreadPool().execute(new Runnable() {
+				
+				@Override
+				public void run() {
+					throw new RuntimeException("Testing unhandled exception processing on thread pool.");	
 				}
 			});
 		}

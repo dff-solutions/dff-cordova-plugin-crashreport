@@ -1,8 +1,8 @@
 /**
  * JavaScript interface to abstract
- * the usage of the ToughpadApi.
+ * the usage of the crashreport.
  *
- * @module com/dff/cordova/plugins/ToughpadApi
+ * @module com/dff/cordova/plugins/crashreport
  */
 
 'use strict';
@@ -13,7 +13,13 @@ var channel = require('cordova/channel');
 var feature = "CrashReport";
 var self = {};
 
-var actions = ["onLog", "onCrash", "throwUncaughtException"];
+var actions = [
+    "onLog",
+    "onCrash",
+    "throwUncaughtException",
+    "throwUncaughtExceptionOnUi",
+    "throwUncaughtExceptionOnThreadPool"
+];
 
 function createActionFunction (action) {
     return function (success, error, args) {
