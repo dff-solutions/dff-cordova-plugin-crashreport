@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0" 
-    id="com.dff.cordova.plugin.crashreport"
+    id="dff-cordova-plugin-crashreport"
     version="0.0.1">
 
     <name>crashreport</name>

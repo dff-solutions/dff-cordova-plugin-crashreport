@@ -10,7 +10,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.dff.cordova.plugin.common.CommonPlugin;
-import com.dff.cordova.plugin.common.log.CordovaPluginLog;
+
+import android.util.Log;
 
 /**
  * @author frank
@@ -66,7 +67,7 @@ public class CrashReportPlugin extends CommonPlugin {
      		, final JSONArray args
      		, final CallbackContext callbackContext)
          throws JSONException {
-		CordovaPluginLog.i(LOG_TAG, "call for action: " + action + "; args: " + args);
+		Log.d(LOG_TAG, "call for action: " + action + "; args: " + args);
 		
 		if (action.equals("onCrash")) {
 			this.crashReporter.setCallBack(callbackContext);
@@ -84,6 +85,8 @@ public class CrashReportPlugin extends CommonPlugin {
 					throw new RuntimeException("Testing unhandled exception processing on ui thread.");	
 				}
 			});
+			
+			return true;
 		}
 		else if (action.equals("throwUncaughtExceptionOnThreadPool")) {     	
 			this.cordova.getThreadPool().execute(new Runnable() {
@@ -93,6 +96,8 @@ public class CrashReportPlugin extends CommonPlugin {
 					throw new RuntimeException("Testing unhandled exception processing on thread pool.");	
 				}
 			});
+
+			return true;
 		}
 		
 		return super.execute(action, args, callbackContext);
