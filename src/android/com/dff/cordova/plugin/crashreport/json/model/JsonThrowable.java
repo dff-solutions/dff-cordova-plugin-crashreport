@@ -5,7 +5,8 @@ import org.json.JSONObject;
 
 public class JsonThrowable {
 	public static JSONObject toJson(Throwable e) throws JSONException {
-		JSONObject jsonThrowable = new JSONObject();		
+		JSONObject jsonThrowable = new JSONObject();
+		jsonThrowable.put("className", e.getClass().getName());
 		jsonThrowable.put("message", e.getMessage());		
 		jsonThrowable.put("stackTrace", JsonStacktrace.toJson(e.getStackTrace()));
 		

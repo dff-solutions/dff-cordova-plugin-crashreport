@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0" 
     id="dff-cordova-plugin-crashreport"
-    version="0.0.1">
+    version="0.0.2">
 
     <name>crashreport</name>
     <description>crashreport Plugin</description>
@@ -12,7 +12,8 @@
         <clobbers target="CrashReport" />
     </js-module>
     
-    <dependency id="dff-cordova-plugin-common" url="https://github.com/dff-solutions/dff.CordovaPlugin.Common.git" />
+    <dependency id="dff-cordova-plugin-common"         url="https://github.com/dff-solutions/dff.CordovaPlugin.Common.git" />
+    <dependency id="dff-cordova-plugin-packagemanager" url="https://github.com/dff-solutions/dff.CordovaPlugin.PackageManager.git" />
  
     <!-- android -->
     <platform name="android">

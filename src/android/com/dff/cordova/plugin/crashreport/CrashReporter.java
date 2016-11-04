@@ -22,9 +22,12 @@ import com.dff.cordova.plugin.crashreport.json.model.JsonRunningAppProcessInfo;
 import com.dff.cordova.plugin.crashreport.json.model.JsonRunningServiceInfo;
 import com.dff.cordova.plugin.crashreport.json.model.JsonThread;
 import com.dff.cordova.plugin.crashreport.json.model.JsonThrowable;
+import com.dff.cordova.plugin.packagemanager.model.json.JSONPackageInfo;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Environment;
 
 /**
@@ -33,6 +36,21 @@ import android.os.Environment;
  */
 public class CrashReporter extends AbstractPluginListener implements UncaughtExceptionHandler {
 	public static final String LOG_TAG = "com.dff.cordova.plugin.crashreport.CrashReporter";
+	
+	private static final int PACKAGE_INFO_FLAGS = PackageManager.GET_ACTIVITIES
+			| PackageManager.GET_CONFIGURATIONS
+			| PackageManager.GET_GIDS
+			| PackageManager.GET_INSTRUMENTATION
+			| PackageManager.GET_INTENT_FILTERS
+			| PackageManager.GET_META_DATA
+			| PackageManager.GET_PERMISSIONS
+			| PackageManager.GET_PROVIDERS
+			| PackageManager.GET_RECEIVERS
+			| PackageManager.GET_SERVICES
+			| PackageManager.GET_SHARED_LIBRARY_FILES
+			| PackageManager.GET_SIGNATURES
+			| PackageManager.GET_URI_PERMISSION_PATTERNS;
+	
 	private static volatile boolean mCrashing = false;
 	private UncaughtExceptionHandler defaultHandler;
 	private CordovaInterface cordova;
@@ -70,6 +88,11 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 			List<ActivityManager.ProcessErrorStateInfo> processErrorStateInfo = activityManager.getProcessesInErrorState();
 			List<ActivityManager.RunningServiceInfo> runningServiceInfo = activityManager.getRunningServices(1000);
 			
+			String packagename = this.cordova.getActivity().getPackageName();
+			PackageManager packageManager = this.cordova.getActivity().getPackageManager();
+			PackageInfo packageinfo = packageManager.getPackageInfo(packagename, PACKAGE_INFO_FLAGS);
+			
+			jsonCrashReport.put("packageInfo",JSONPackageInfo.toJSON(packageinfo));
 			jsonCrashReport.put("runningAppProcesses", JsonRunningAppProcessInfo.toJson(runningAppProcessessInfo));
 			jsonCrashReport.put("processErrorStateInfo", JsonProcessErrorStateInfo.toJson(processErrorStateInfo));
 			jsonCrashReport.put("runningServiceInfo", JsonRunningServiceInfo.toJson(runningServiceInfo));				
