@@ -29,6 +29,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.util.Log;
 
 /**
  * @author frank
@@ -72,69 +73,8 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
         mCrashing = true;
 		
 		try {
-			CordovaPluginLog.e(LOG_TAG, e.getMessage(), e);
-			
-			JSONObject jsonCrashReport = new JSONObject();
-			String date = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss.SSS").format(new Date());
-			int pid = android.os.Process.myPid();
-			ActivityManager activityManager = (ActivityManager) this.cordova.getActivity().getSystemService(Context.ACTIVITY_SERVICE);
-			ActivityManager.RunningAppProcessInfo myMemoryOutState = new ActivityManager.RunningAppProcessInfo();
-			ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-			
-			ActivityManager.getMyMemoryState(myMemoryOutState);
-			activityManager.getMemoryInfo(memoryInfo);
-			android.os.Debug.MemoryInfo[] memoryInfos = activityManager.getProcessMemoryInfo(new int[] {pid});
-			List<ActivityManager.RunningAppProcessInfo> runningAppProcessessInfo = activityManager.getRunningAppProcesses();
-			List<ActivityManager.ProcessErrorStateInfo> processErrorStateInfo = activityManager.getProcessesInErrorState();
-			List<ActivityManager.RunningServiceInfo> runningServiceInfo = activityManager.getRunningServices(1000);
-			
-			String packagename = this.cordova.getActivity().getPackageName();
-			PackageManager packageManager = this.cordova.getActivity().getPackageManager();
-			PackageInfo packageinfo = packageManager.getPackageInfo(packagename, PACKAGE_INFO_FLAGS);
-			
-			jsonCrashReport.put("packageInfo",JSONPackageInfo.toJSON(packageinfo));
-			jsonCrashReport.put("runningAppProcesses", JsonRunningAppProcessInfo.toJson(runningAppProcessessInfo));
-			jsonCrashReport.put("processErrorStateInfo", JsonProcessErrorStateInfo.toJson(processErrorStateInfo));
-			jsonCrashReport.put("runningServiceInfo", JsonRunningServiceInfo.toJson(runningServiceInfo));				
-			jsonCrashReport.put("myMemoryState", JsonRunningAppProcessInfo.toJson(myMemoryOutState));
-			jsonCrashReport.put("memoryInfo", JsonMemoryInfo.toJson(memoryInfo));
-			jsonCrashReport.put("debugMemoryInfo", JsonDebugMemoryInfo.toJson(memoryInfos));
-			jsonCrashReport.put("memoryClass", activityManager.getMemoryClass());
-			jsonCrashReport.put("lowRamDevice", activityManager.isLowRamDevice());
-			jsonCrashReport.put("isUserAMonkey", ActivityManager.isUserAMonkey());
-			jsonCrashReport.put("isRunningInTestHarness", ActivityManager.isRunningInTestHarness());
-					
-			jsonCrashReport.put("pid", pid);
-			jsonCrashReport.put("date", date);
-			jsonCrashReport.put("thread", JsonThread.toJson(t));
-			jsonCrashReport.put("throwable", JsonThrowable.toJson(e));
-			
-			if (isExternalStorageWritable()) {
-				File crashReportDir = new File(this.cordova.getActivity().getExternalFilesDir(null), "crashreports");
-				
-				if (!crashReportDir.mkdirs()) {
-					CordovaPluginLog.w(LOG_TAG, crashReportDir.getAbsolutePath() + " not created");
-				}
-				
-				if (crashReportDir.exists() ) {
-					String filename = "crashreport_" + date + ".txt";
-					File crashReportFile = new File(crashReportDir, filename);
-					
-					if (!crashReportFile.exists() && crashReportFile.createNewFile()) {
-						CordovaPluginLog.i(LOG_TAG, crashReportFile.getAbsolutePath() + " created");
-					}
-					
-					FileOutputStream outputStream = new FileOutputStream(crashReportFile, true);
-					
-					outputStream.write(jsonCrashReport.toString().getBytes());
-					outputStream.flush();
-					outputStream.close();
-				}
-				else {
-					CordovaPluginLog.w(LOG_TAG, crashReportDir.getAbsolutePath() + " does not exist");
-				}
-			}
-			
+			CordovaPluginLog.e(LOG_TAG, e.getMessage(), e);			
+			JSONObject jsonCrashReport = createCrashreport(t, e, this.cordova.getActivity());			
 			super.sendPluginResult(jsonCrashReport);
 		}
 		catch (Throwable e1) {
@@ -142,7 +82,7 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 				CordovaPluginLog.e(LOG_TAG, e1.getMessage(), e1);
 			}
 			catch (Throwable t3) {
-				// even log fails!
+				Log.e(LOG_TAG, e.getMessage(), e);
 			}			
 		}
 		finally {
@@ -151,8 +91,73 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
 		}		
 	}
 	
+	public static JSONObject createCrashreport(Thread t, Throwable e, Context context) throws Exception {
+		JSONObject jsonCrashReport = new JSONObject();
+		String date = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss.SSS").format(new Date());
+		int pid = android.os.Process.myPid();
+		ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+		ActivityManager.RunningAppProcessInfo myMemoryOutState = new ActivityManager.RunningAppProcessInfo();
+		ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+		
+		ActivityManager.getMyMemoryState(myMemoryOutState);
+		activityManager.getMemoryInfo(memoryInfo);
+		android.os.Debug.MemoryInfo[] memoryInfos = activityManager.getProcessMemoryInfo(new int[] {pid});
+		List<ActivityManager.RunningAppProcessInfo> runningAppProcessessInfo = activityManager.getRunningAppProcesses();
+		List<ActivityManager.ProcessErrorStateInfo> processErrorStateInfo = activityManager.getProcessesInErrorState();
+		List<ActivityManager.RunningServiceInfo> runningServiceInfo = activityManager.getRunningServices(1000);
+		
+		String packagename = context.getPackageName();
+		PackageManager packageManager = context.getPackageManager();
+		PackageInfo packageinfo = packageManager.getPackageInfo(packagename, PACKAGE_INFO_FLAGS);
+		
+		jsonCrashReport.put("packageInfo",JSONPackageInfo.toJSON(packageinfo));
+		jsonCrashReport.put("runningAppProcesses", JsonRunningAppProcessInfo.toJson(runningAppProcessessInfo));
+		jsonCrashReport.put("processErrorStateInfo", JsonProcessErrorStateInfo.toJson(processErrorStateInfo));
+		jsonCrashReport.put("runningServiceInfo", JsonRunningServiceInfo.toJson(runningServiceInfo));				
+		jsonCrashReport.put("myMemoryState", JsonRunningAppProcessInfo.toJson(myMemoryOutState));
+		jsonCrashReport.put("memoryInfo", JsonMemoryInfo.toJson(memoryInfo));
+		jsonCrashReport.put("debugMemoryInfo", JsonDebugMemoryInfo.toJson(memoryInfos));
+		jsonCrashReport.put("memoryClass", activityManager.getMemoryClass());
+		jsonCrashReport.put("lowRamDevice", activityManager.isLowRamDevice());
+		jsonCrashReport.put("isUserAMonkey", ActivityManager.isUserAMonkey());
+		jsonCrashReport.put("isRunningInTestHarness", ActivityManager.isRunningInTestHarness());
+				
+		jsonCrashReport.put("pid", pid);
+		jsonCrashReport.put("date", date);
+		jsonCrashReport.put("thread", JsonThread.toJson(t));
+		jsonCrashReport.put("throwable", JsonThrowable.toJson(e));
+		
+		if (isExternalStorageWritable()) {
+			File crashReportDir = new File(context.getExternalFilesDir(null), "crashreports");
+			
+			if (!crashReportDir.mkdirs()) {
+				CordovaPluginLog.w(LOG_TAG, crashReportDir.getAbsolutePath() + " not created");
+			}
+			
+			if (crashReportDir.exists()) {
+				String filename = "crashreport_" + date + ".txt";
+				File crashReportFile = new File(crashReportDir, filename);
+				
+				if (!crashReportFile.exists() && crashReportFile.createNewFile()) {
+					CordovaPluginLog.i(LOG_TAG, crashReportFile.getAbsolutePath() + " created");
+				}
+				
+				FileOutputStream outputStream = new FileOutputStream(crashReportFile, true);
+				
+				outputStream.write(jsonCrashReport.toString().getBytes());
+				outputStream.flush();
+				outputStream.close();
+			}
+			else {
+				CordovaPluginLog.w(LOG_TAG, crashReportDir.getAbsolutePath() + " does not exist");
+			}
+		}
+		
+		return jsonCrashReport;
+	}
+	
 	/* Checks if external storage is available for read and write */
-	public boolean isExternalStorageWritable() {		
+	public static boolean isExternalStorageWritable() {		
 		return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
 	}
 
