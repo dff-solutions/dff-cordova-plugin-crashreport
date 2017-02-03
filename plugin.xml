@@ -1,46 +1,57 @@
-<?xml version="1.0" encoding="UTF-8"?> 
-<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0" 
-    id="dff-cordova-plugin-crashreport"
-    version="0.0.2">
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+        id="dff-cordova-plugin-crashreport"
+        version="1.0.0">
 
     <name>crashreport</name>
     <description>crashreport Plugin</description>
     <author>dff solutions</author>
     <keywords>phonegap,cordova,crashreport,dff</keywords>
- 
-     <js-module src="www/crashreport.js" name="crashreport">
-        <clobbers target="CrashReport" />
+
+    <js-module src="www/crashreport.js" name="crashreport">
+        <clobbers target="CrashReport"/>
     </js-module>
-    
-    <dependency id="dff-cordova-plugin-common"         url="https://github.com/dff-solutions/dff.CordovaPlugin.Common.git" />
-    <dependency id="dff-cordova-plugin-packagemanager" url="https://github.com/dff-solutions/dff.CordovaPlugin.PackageManager.git" />
- 
+
+    <dependency id="dff-cordova-plugin-common" url="https://github.com/dff-solutions/dff.CordovaPlugin.Common.git"/>
+    <dependency id="dff-cordova-plugin-packagemanager"
+                url="https://github.com/dff-solutions/dff.CordovaPlugin.PackageManager.git"/>
+
     <!-- android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="CrashReport">
                 <param name="android-package" value="com.dff.cordova.plugin.crashreport.CrashReportPlugin"/>
-                <param name="onload" value="true" />
+                <param name="onload" value="true"/>
             </feature>
         </config-file>
-        
-         
+
+
         <config-file target="AndroidManifest.xml" parent="/manifest">
-        	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />                	        
-        	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
         </config-file>
-        
-		<source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonThrowable.java" target-dir="src/com/dff/cordova/plugin/crashreport/json/model" />
-		<source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonMemoryInfo.java" target-dir="src/com/dff/cordova/plugin/crashreport/json/model" />
-		<source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonDebugMemoryInfo.java" target-dir="src/com/dff/cordova/plugin/crashreport/json/model" />
-		<source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonThread.java" target-dir="src/com/dff/cordova/plugin/crashreport/json/model" />
-		<source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonRunningServiceInfo.java" target-dir="src/com/dff/cordova/plugin/crashreport/json/model" />
-		<source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonProcessErrorStateInfo.java" target-dir="src/com/dff/cordova/plugin/crashreport/json/model" />
-		<source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonStacktrace.java" target-dir="src/com/dff/cordova/plugin/crashreport/json/model" />
-		<source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonRunningAppProcessInfo.java" target-dir="src/com/dff/cordova/plugin/crashreport/json/model" />
-		<source-file src="src/android/com/dff/cordova/plugin/crashreport/CrashReporter.java" target-dir="src/com/dff/cordova/plugin/crashreport" />
-		<source-file src="src/android/com/dff/cordova/plugin/crashreport/CrashReportPlugin.java" target-dir="src/com/dff/cordova/plugin/crashreport" />        
-     </platform>
+
+        <source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonThrowable.java"
+                     target-dir="src/com/dff/cordova/plugin/crashreport/json/model"/>
+        <source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonMemoryInfo.java"
+                     target-dir="src/com/dff/cordova/plugin/crashreport/json/model"/>
+        <source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonDebugMemoryInfo.java"
+                     target-dir="src/com/dff/cordova/plugin/crashreport/json/model"/>
+        <source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonThread.java"
+                     target-dir="src/com/dff/cordova/plugin/crashreport/json/model"/>
+        <source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonRunningServiceInfo.java"
+                     target-dir="src/com/dff/cordova/plugin/crashreport/json/model"/>
+        <source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonProcessErrorStateInfo.java"
+                     target-dir="src/com/dff/cordova/plugin/crashreport/json/model"/>
+        <source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonStacktrace.java"
+                     target-dir="src/com/dff/cordova/plugin/crashreport/json/model"/>
+        <source-file src="src/android/com/dff/cordova/plugin/crashreport/json/model/JsonRunningAppProcessInfo.java"
+                     target-dir="src/com/dff/cordova/plugin/crashreport/json/model"/>
+        <source-file src="src/android/com/dff/cordova/plugin/crashreport/CrashReporter.java"
+                     target-dir="src/com/dff/cordova/plugin/crashreport"/>
+        <source-file src="src/android/com/dff/cordova/plugin/crashreport/CrashReportPlugin.java"
+                     target-dir="src/com/dff/cordova/plugin/crashreport"/>
+    </platform>
 </plugin>
 
 
