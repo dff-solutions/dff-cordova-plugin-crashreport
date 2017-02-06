@@ -10,12 +10,14 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Environment;
+import android.text.format.Formatter;
 import android.util.Log;
 import com.dff.cordova.plugin.common.AbstractPluginListener;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 import com.dff.cordova.plugin.crashreport.json.model.*;
 import com.dff.cordova.plugin.packagemanager.model.json.JSONPackageInfo;
 import org.apache.cordova.CordovaInterface;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -92,6 +94,7 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
             jsonOS.put("RELEASE", Build.VERSION.RELEASE);
             jsonOS.put("SDK_INT", Build.VERSION.SDK_INT);
             jsonCrashReport.put("os", jsonOS);
+            jsonCrashReport.put("directories", getDirectories(context));
 
             jsonCrashReport.put("runningAppProcesses", JsonRunningAppProcessInfo.toJson(runningAppProcessessInfo));
             jsonCrashReport.put("processErrorStateInfo", JsonProcessErrorStateInfo.toJson(processErrorStateInfo));
@@ -144,8 +147,72 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
         return jsonCrashReport;
     }
 
+    private static JSONObject getDirectories(Context context) throws JSONException {
+        JSONObject space = new JSONObject();
+        space.put("appData", getFileInfo(context, context.getApplicationInfo().dataDir));
+        space.put("appInternal", getFileInfo(context, context.getFilesDir()));
+        space.put("appCache", getFileInfo(context, context.getCacheDir()));
+        space.put("appExternal", getFileInfo(context, context.getExternalFilesDirs(null)));
+        space.put("appExternalCache", getFileInfo(context, context.getExternalCacheDirs()));
+
+        space.put("data", getFileInfo(context, Environment.getDataDirectory()));
+        space.put("documentsExternal", getFileInfo(context, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)));
+        space.put("external", getFileInfo(context, Environment.getExternalStorageDirectory()));
+        space.put("isExternalStorageEmulated", Environment.isExternalStorageEmulated());
+        space.put("isExternalStorageRemovable", Environment.isExternalStorageRemovable());
+
+        return space;
+    }
+
+    private static JSONArray getFileInfo(Context context, File[] files) throws JSONException {
+        JSONArray filesSpace = new JSONArray();
+
+        if (files != null) {
+            for (File f : files) {
+                filesSpace.put(getFileInfo(context, f));
+            }
+        }
+
+        return filesSpace;
+    }
+
+    private static JSONObject getFileInfo(Context context, String file) throws JSONException {
+        return getFileInfo(context, new File(file));
+    }
+
+    private static JSONObject getFileInfo(Context context, File file) throws JSONException {
+        JSONObject ms = new JSONObject();
+
+        if (file != null) {
+            try {
+                long total = file.getTotalSpace();
+                long free = file.getFreeSpace();
+                long usable = file.getUsableSpace();
+                double used = ((double) (total - free) / total) * 100;
+
+                ms.put("path", file.getAbsolutePath());
+                ms.put("total", total);
+                ms.put("totalHuman", Formatter.formatFileSize(context, total));
+                ms.put("free", free);
+                ms.put("freeHuman", Formatter.formatFileSize(context, free));
+                ms.put("usable", usable);
+                ms.put("usableHuman", Formatter.formatFileSize(context, usable));
+                ms.put("used", used);
+
+                ms.put("canRead", file.canRead());
+                ms.put("canWrite", file.canWrite());
+                ms.put("canExecute", file.canExecute());
+
+            } catch (SecurityException e) {
+                CordovaPluginLog.e(LOG_TAG, e.getMessage(), e);
+            }
+        }
+
+        return ms;
+    }
+
     /* Checks if external storage is available for read and write */
-    public static boolean isExternalStorageWritable() {
+    private static boolean isExternalStorageWritable() {
         return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
     }
 

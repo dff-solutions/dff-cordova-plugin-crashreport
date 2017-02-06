@@ -5,6 +5,11 @@ Reports unhandled exceptions and saves reports in app directory
 
 - Android
 
+## Changelog
+
+### 1.1.0
+- Directory info added
+
 ## Installation
     cordova plugin add https://github.com/dff-solutions/dff-cordova-plugin-crashreport.git
     
@@ -19,7 +24,7 @@ E.g.:
 ### Report format
 
 #### Android
-A report on Android has basically the followign format. All properties contain more details.
+A report on Android has basically the following format. All properties contain more details.
 ```json
 {
   "throwable": {
@@ -27,10 +32,12 @@ A report on Android has basically the followign format. All properties contain m
       "cause": {},
       "stackTrace": []
     },
+  "os": {},
   "pid": 10105,
   "memoryInfo": {},
   "myMemoryState": {},
   "date": "",
+  "directories: {}"
   "debugMemoryInfo": {},
   "processErrorStateInfo": [],
   "memoryClass": 96,
@@ -51,7 +58,7 @@ Plugin is available via global variable `CrashReport`.
 The plugin tries to send a plugin result to JavaScript. But in most cases the app will be closed before.
 Nevermind the report is always saved as a file.
 
-```javascript
+```js
 CrashReport
   .onCrash(function (report) {
       console.log(report);
