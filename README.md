@@ -7,6 +7,8 @@ Reports unhandled exceptions and saves reports in app directory
 
 ## Changelog
 
+### 1.2.0
+- FEAT: @Target Android version starting with API 23: Requesting Locations Permission!
 ### 1.1.0
 - Directory info added
 
