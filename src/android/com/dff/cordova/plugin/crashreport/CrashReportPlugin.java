@@ -4,10 +4,8 @@
 package com.dff.cordova.plugin.crashreport;
 
 import android.Manifest;
-import android.content.pm.PackageManager;
 import android.util.Log;
 import com.dff.cordova.plugin.common.CommonPlugin;
-import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 import org.apache.cordova.CallbackContext;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,33 +24,15 @@ public class CrashReportPlugin extends CommonPlugin {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         };
 
-    private static final int READ_AND_WRITE_PERMISSION_CODE = 0;
-
     private CrashReporter crashReporter;
 
     public CrashReportPlugin() {
         super(LOG_TAG);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (!cordova.hasPermission(READ_AND_WRITE_PERMISSIONS[0])) {
-            getReadAndWritePermission(READ_AND_WRITE_PERMISSION_CODE);
-        }
-    }
-
-    private void getReadAndWritePermission(int requestCode) {
-        cordova.requestPermissions(this, requestCode, READ_AND_WRITE_PERMISSIONS);
-    }
-
-    public void onRequestPermissionResult(int requestCode, String[] permissions,
-                                          int[] grantResults) throws JSONException {
-        for (int r : grantResults) {
-            if (r == PackageManager.PERMISSION_DENIED) {
-                CordovaPluginLog.e(LOG_TAG, "READ AND WRITE PERMISSIONS DENIED");
-                return;
-            }
+    private void requestPermissions() {
+        for (String permission : READ_AND_WRITE_PERMISSIONS) {
+            CommonPlugin.addPermission(permission);
         }
     }
 
@@ -62,7 +42,7 @@ public class CrashReportPlugin extends CommonPlugin {
     @Override
     public void pluginInitialize() {
         super.pluginInitialize();
-
+        requestPermissions();
         UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
         crashReporter = new CrashReporter(handler, cordova);
         Thread.setDefaultUncaughtExceptionHandler(crashReporter);

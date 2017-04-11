@@ -7,6 +7,8 @@ Reports unhandled exceptions and saves reports in app directory
 
 ## Changelog
 
+### 1.2.1
+- Ref: requesting permissions will be performed by the common plugin @TargetAPI(21)
 ### 1.2.0
 - FEAT: @Target Android version starting with API 23: Requesting Locations Permission!
 ### 1.1.0
