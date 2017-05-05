@@ -7,6 +7,9 @@ Reports unhandled exceptions and saves reports in app directory
 
 ## Changelog
 
+### 1.2.2 
+- Feat: @Cordova android 6.2.2 --> added package.json
+
 ### 1.2.1
 - Ref: requesting permissions will be performed by the common plugin @TargetAPI(21)
 ### 1.2.0
