@@ -7,6 +7,9 @@ Reports unhandled exceptions and saves reports in app directory
 
 ## Changelog
 
+### 1.2.3 
+- Fix: updated plugin.xml @spec attr
+
 ### 1.2.2 
 - Feat: @Cordova android 6.2.2 --> added package.json
 
