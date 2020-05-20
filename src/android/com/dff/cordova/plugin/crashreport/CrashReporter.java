@@ -188,7 +188,7 @@ public class CrashReporter extends AbstractPluginListener implements UncaughtExc
                 long total = file.getTotalSpace();
                 long free = file.getFreeSpace();
                 long usable = file.getUsableSpace();
-                double used = ((double) (total - free) / total) * 100;
+                double used = total == 0 ? 0 :  ((double) (total - free) / total) * 100;
 
                 ms.put("path", file.getAbsolutePath());
                 ms.put("total", total);
